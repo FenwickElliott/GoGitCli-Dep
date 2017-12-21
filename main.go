@@ -19,11 +19,8 @@ var appDir = path.Join(os.Getenv("HOME"), "Library", "Application Support", "GoG
 func main() {
 
 	setToken()
-
-	// initialize()
-	// getKey()
-	// checkArgs()
-	// createRepo(os.Args[1:2][0])
+	name := getName()
+	createRepo(name)
 }
 
 func setToken() {
@@ -33,7 +30,7 @@ func setToken() {
 	token, err := ioutil.ReadFile(path.Join(appDir, "apiToken"))
 	if os.IsNotExist(err) {
 		// TODO get token thorugh OAuth
-		log.Fatal("Get token")
+		log.Fatal("TODO: Get token.")
 	}
 	ctx = context.Background()
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: string(token)})
@@ -41,11 +38,11 @@ func setToken() {
 	client = github.NewClient(tc)
 }
 
-func checkArgs() {
+func getName() string {
 	if len(os.Args[1:]) < 1 {
-		log.Fatal("No arguments given, we need at least one for the name")
+		log.Fatal("No arguments given, we need at least one for the name.")
 	}
-	// return nil
+	return os.Args[1:2][0]
 }
 
 func createRepo(name string) {
@@ -57,13 +54,5 @@ func createRepo(name string) {
 		log.Fatal(err)
 	} else {
 		fmt.Println("successfully created ", name)
-	}
-}
-
-func check(err error) {
-	if err != nil {
-		// fmt.Println(err)
-		// panic(err)
-		log.Fatal(err)
 	}
 }
