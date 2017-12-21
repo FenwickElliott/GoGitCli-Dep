@@ -22,34 +22,33 @@ var ctx context.Context
 var appDir = path.Join(os.Getenv("HOME"), "Library", "Application Support", "GoGitCli")
 
 func main() {
-
-	setToken()
-	name := getName()
-	createRepo(name)
+	args := os.Args[1:]
+	switch args[0] {
+	case "authorize":
+		authorize()
+	case "deauthorize":
+		deauthorize()
+	case "new":
+		createRepo(os.Args[1:][1])
+	default:
+		fmt.Println("Not an option")
+	}
 }
 
 func setToken() {
-	if _, err := os.Stat(appDir); os.IsNotExist(err) {
-		os.Mkdir(appDir, 0744)
-	}
 	token, err := ioutil.ReadFile(path.Join(appDir, "apiToken"))
 	if os.IsNotExist(err) {
-		initialize()
+		log.Fatal("No API token found. Run: 'GoGitCli authorize'")
 	}
+	check(err)
 	ctx = context.Background()
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: string(token)})
 	tc := oauth2.NewClient(ctx, ts)
 	client = github.NewClient(tc)
 }
 
-func getName() string {
-	if len(os.Args[1:]) < 1 {
-		log.Fatal("No arguments given, we need at least one for the name.")
-	}
-	return os.Args[1:2][0]
-}
-
 func createRepo(name string) {
+	setToken()
 	repo := &github.Repository{
 		Name: github.String(name),
 	}
@@ -61,15 +60,24 @@ func createRepo(name string) {
 	}
 }
 
-func initialize() {
-	fmt.Println("Initializing...")
+func authorize() {
+	fmt.Println("Authorizing, please check your browser")
+	if _, err := os.Stat(appDir); os.IsNotExist(err) {
+		os.Mkdir(appDir, 0744)
+	}
 	done := make(chan bool)
 	go serve(done)
 	exec.Command("open", "https://github.com/login/oauth/authorize?client_id=974e6b9d6153b79b9fb9&redirect_uri=http://localhost:3456/catch&scope=repo&state=rabbits&allow_signup=true").Start()
 	finished := <-done
 	if finished {
-		fmt.Println("Horray")
+		fmt.Println("Authorization Complete")
 	}
+}
+
+func deauthorize() {
+	err := os.Remove(path.Join(appDir, "apiToken"))
+	check(err)
+	fmt.Println("Successfully remove authorization")
 }
 
 func serve(done chan bool) {
