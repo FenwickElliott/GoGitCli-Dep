@@ -1,5 +1,5 @@
 # GoGitCli
-A Command line interface wrapper for the [go-git](https://github.com/google/go-github)
+A Command line interface wrapper for the [go-github](https://github.com/google/go-github)
 
 ## Installation
 Download precomiled version [here](https://example.com)
