@@ -2,7 +2,7 @@
 A Command line interface wrapper for the [go-github](https://github.com/google/go-github)
 
 ## Installation
-Download precomiled version [here](https://example.com)
+Download precomiled version [here](https://github.com/FenwickElliott/GoGitCli/raw/master/GoGitCli)
 Move to bin: `mv GoGitCli /usr/local/bin`
 
 ## Usage

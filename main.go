@@ -23,7 +23,7 @@ var appDir = path.Join(os.Getenv("HOME"), "Library", "Application Support", "GoG
 
 func main() {
 	args := os.Args[1:]
-	switch args[0] {
+	switch strings.ToLower(args[0]) {
 	case "authorize":
 		authorize()
 	case "deauthorize":
